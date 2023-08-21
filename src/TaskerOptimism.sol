@@ -3,6 +3,7 @@ pragma solidity ^0.8.21;
 
 import { L1Block } from "./interfaces/L1Block.sol";
 import { AlphaProVault } from "./interfaces/AlphaProVault.sol";
+import { ERC20 } from "./interfaces/ERC20.sol";
 
 contract TaskerOptimism {
     // this is length of transaction with zero calldata
@@ -29,6 +30,13 @@ contract TaskerOptimism {
         emit Worked(msg.sender, totalPayment);
         (bool succ, ) = payable(msg.sender).call{value: totalPayment}("");
         require(succ);
+    }
+
+    function recoverERC20(address _token) external {
+        ERC20 token = ERC20(_token);
+        uint256 balanceof = token.balanceOf(address(this));
+        (bool succ, bytes memory returndata) = _token.call(abi.encodeCall(ERC20.transfer, (msg.sender, balanceof)));
+        require(succ && (returndata.length == 0 || abi.decode(returndata, (bool))) && _token.code.length > 0);
     }
 
     event Funded(uint256 amount, uint256 currentBalance);

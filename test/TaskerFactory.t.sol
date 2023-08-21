@@ -19,6 +19,7 @@ contract TaskerFactoryTest is Test {
         address tasker = taskerFactory.createNewTasker(exampleVault);
         assertTrue(tasker != address(0));
         assertTrue(taskerFactory.vaultToTaskers(exampleVault) == tasker);
+        assertTrue(taskerFactory.isTasker(tasker));
         assertTrue(taskerFactory.taskersLength() == 1);
     }
     function test_noDuplicate() public {
