@@ -15,14 +15,14 @@ contract TaskerOptimism {
     constructor(address _vault) {
         vault = AlphaProVault(_vault);
     }
-    receive() payable external {
+    function fund() payable external {
         emit Funded(msg.value, address(this).balance);
     }
     fallback() external {
         uint256 gasBefore = gasleft();
         vault.rebalance();
         uint256 gasAfter = gasleft();
-        uint256 l2fee = (gasBefore - gasAfter) * block.basefee;
+        uint256 l2fee = (21000 + gasBefore - gasAfter) * block.basefee;
         uint256 calldataLength = CALLDATA_LENGTH + l1block.l1FeeOverhead();
         uint256 l1fee = (calldataLength * l1block.l1FeeScalar()) / DECIMALS;
         uint256 totalPayment = (l1fee + l2fee) * 11000 / 10000;
